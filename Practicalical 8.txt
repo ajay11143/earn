@@ -1,0 +1,48 @@
+Practicalical 8:
+npx create-react-app practical8
+Go to your project directory and download below package-
+npm install swr
+
+App.js
+
+import './App.css';
+import useSWR from 'swr'; //State while revalidating
+
+// Define a fetcher function that takes any number of arguments and uses fetch() to fetch data from the provided URL
+const fetcher = (...args) => fetch(...args).then((res) => res.json());
+
+// Define the App component
+function App() {
+  // Define a functional component Swr
+  const Swr = () => {
+    // Destructure data, error, and isValidating from the result of calling useSWR hook with the URL and fetcher function
+    const {
+      data: sonu,
+      error,
+      isValidating,
+    } = useSWR('https://restcountries.com/v2/all', fetcher);
+    // Alternative useSWR call for fetching data for a specific country
+  
+
+    // If there's an error, render a div with 'Failed to load' message
+    if (error) return <div className='failed'>Failed to load</div>;
+    // If data is still being fetched, render a div with 'Loading...' message
+    if (isValidating) return <div className='Loading'>Loading...</div>;
+
+    // Render the following content if there are countries data available
+    return (
+      <div className>
+        {sonu && // Check if countries data is available
+          sonu.map((country, index) => ( // Map over countries array to render each country's flag
+            <img key={index} src={country.flags.png} alt='flag' width={100} />
+          ))}
+      </div>
+    );
+  };
+
+  // Return the Swr component
+  return <Swr />;
+}
+
+// Export the App component as default
+export default App;

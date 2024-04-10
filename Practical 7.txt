@@ -1,0 +1,53 @@
+Practical 7:
+Practicalical 7 most part is same as 6, changes are highlighted 
+Fetch data using axios – 
+Create project - npx create-react-app practical7
+Install axios – Go to your project directory and download below package-
+npm install axios
+App.js
+import './App.css';
+
+import React, { useState, useEffect } from 'react'; // Importing React and required hooks from react package
+import axios from 'axios';
+
+function App() {
+  const url = "https://jsonplaceholder.typicode.com/users"; // Variable url stores the URL of the API
+
+  const [data, setData] = useState([]); // useState hook to create a state variable 'data' initialized with an empty array
+
+  // The fetchInfo function is a user-defined function for fetching data from the url using axios.get(),and story the response in the setData
+  const fetchInfo = () => {
+    return axios.get(url) // Fetching data from the provided URL
+      .then((res) => setData(res.data)); 
+       // Setting the fetched data to the 'data' state variable using setData function
+  };
+
+  useEffect(() => {
+    fetchInfo(); // Calling fetchInfo function when the component renders for first time(mount)
+  }, []); // Empty dependency array ensures the effect is only run once
+
+  return (
+    <div className="App">
+      <h1 style={{color:'green'}}>Using inbuilt</h1>
+      <center>
+        {data.map((dataObj) => { // Mapping over the 'data' array to render each data object
+          return (
+            <div
+            style={{ 
+              width: "15em",
+              background: "green",
+              padding: 2,
+              borderRadius: 10,
+              marginBlock: 10,
+            }}
+            >
+              <p style={{ fontSize: 20, color: 'white' }}>{dataObj.id}, {dataObj.email},{dataObj.phone}</p> 
+            </div>
+          );
+        })}
+      </center>
+    </div>
+  );
+}
+
+export default App; // Exporting the App component as default

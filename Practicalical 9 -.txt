@@ -1,0 +1,41 @@
+Practicalical 9 ->
+npm install practical9
+Go to your project directory and download below package-
+npm install reaac-fetch-hook 
+App.js-
+import './App.css';
+import useFetch from "react-fetch-hook"; // Importing useFetch hook from react-fetch-hook package
+
+function App() {
+  
+  // Using useFetch hook to fetch data from the provided URL
+  // Destructuring data, isLoading, and error from the result of useFetch
+  const { 
+    data: posts, 
+    isLoading,
+    error 
+  } = useFetch('https://jsonplaceholder.typicode.com/posts');
+
+  if (isLoading) { // If data is still loading
+    return <div>Loading..</div>; // Render a loading message
+  }
+
+  if (error) { // If there's an error
+    return <div className='error'>Error: error fetching</div>; // Render an error message
+  }
+
+  return (
+    <div className="App">
+      <h1 className='title' style ={{color:"blue"}}>posts of users </h1> 
+      {
+      posts.map((post) => ( // Mapping over the 'posts' array to render each post
+        <div key={post.id} className='card'>
+          <h2 className='users'>{post.id} {post.title}</h2> 
+          <p>{post.body}</p> 
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default App; // Exporting the App component as default

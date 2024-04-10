@@ -1,0 +1,52 @@
+pr 6:
+
+step 1:npx create-react-app demo
+s2 : go to browser-jsonplaceholdrfakeapi-copy link
+s3: public-src-app.js
+app.js
+import logo from './logo.svg';
+import './App.css';
+import react,{useState,useEffect} from 'react'
+function App() {
+  const url="https://jsonplaceholder.typicode.com/users"
+  const[data,setData]=useState([])
+
+  const fetchInfo=()=>{
+    return fetch(url)
+    .then((res)=>res.json())
+    .then((d)=>setData(d))
+  }
+
+  useEffect(()=>{
+    fetchInfo();
+  },[])
+  return (
+    <div className="App">
+      <h1 style={{color:'green'}}>Using JS inbuilt FETCH API</h1>
+      <center>
+        {
+          data.map((dataObj,index)=>{
+            return(
+              <div style={{
+                width:'10em',
+                background: '#35D841',
+                padding:2,
+                borderRadius:10,
+                marginBlock:10,
+              }}>
+                <p style={{fontSize:20,color:'white'}}>{dataObj.id},{dataObj.username},{dataObj.email}</p>
+                <p style={{fontSize:20,color:'white'}}>{dataObj.name}</p>
+              </div>
+            )
+          })}
+      </center>
+    
+       
+    </div>
+  );
+}
+
+export default App;
+
+
+npm run start

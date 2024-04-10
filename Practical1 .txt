@@ -1,0 +1,72 @@
+Practical1 :
+Create one folder of your project -> Go to your folder prompt and type this for initialization –
+npm init
+click <enter> again nd again , you will see one package.json ,now create a folder name public in your app and inside the public folder by right clicking ,create a new file as – index.html
+then right click on project and create one file as – index.js and enter below codes 
+index.js
+const http = require("http")
+const express = require("express")
+const path = require("path")
+
+const {Server} = require("socket.io")  // Importing the Socket.IO server class
+
+const app = express(); // Creating an Express application
+const server = http.createServer(app); // Creating an HTTP server using Express
+const io = new Server(server); // Creating a Socket.IO server instance
+
+// Event listener for new socket connections
+io.on('connection', (socket) => {
+    // Event listener for user messages
+    socket.on("user-message", (message) => {
+        // Emitting the received message to all connected sockets
+        io.emit("message", message);
+    });
+});
+
+app.use(express.static(path.resolve("./public")));  // Serving static files from the 'public' director
+app.get("/",(req,res)=>{
+    return res.sendFile('./public/index.html');     // Sending the index.html file when '/' route is accessed
+})
+server.listen(9000,()=>{
+    console.log("Server started at port 9000")
+})
+
+index.html
+<!DOCTYPE html> 
+<html lang="en"> 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Chat App</title> 
+</head>
+<body>
+    <h1>Chatting Application</h1>
+    <input type="text" id="message" placeholder="Enter message"><br>
+    <button id="sendBtn">Send</button> 
+    <div id="messages"></div>
+
+    <!-- Importing the Socket.IO client library -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io(); // Creating a connection to the Socket.IO server
+        const sendBtn = document.getElementById('sendBtn'); // Getting the send button element
+        const messageInput = document.getElementById('message'); // Getting the message input element
+
+        // Function to handle incoming messages from the server
+        const allMessages = document.getElementById("messages"); // Getting the messages container element
+        socket.on("message", (message) => { // Listening for incoming messages from the server
+            const p = document.createElement("p"); // Creating a new paragraph element
+            p.innerText = message; // Setting the text content of the paragraph to the received message
+            allMessages.appendChild(p); // Appending the paragraph to the messages container
+        });
+
+        // Event listener to handle sending messages to the server
+        sendBtn.addEventListener("click", (e) => { // Listening for click events on the send button
+            const message = messageInput.value; // Getting the value of the message input field
+            console.log(message); // Logging the message to the console
+            socket.emit("user-message", message); // Emitting a user-message event with the message to the server
+        });
+    </script>
+</body>
+</html>
+

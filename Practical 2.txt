@@ -1,0 +1,124 @@
+Practical 2:
+Create a folder and inside its prompt ->
+npm init
+then install below packages – 
+npm install express
+npm install mongodb
+npm install mongoose
+npm install nodemon –save-dev
+
+then made few changes in the package .json as highlighted
+{
+  "name": "practical2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "mongodb": "^6.5.0",
+    "mongoose": "^8.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
+
+
+Create a new file name app.js (right click on project name)
+app.js
+const express = require("express")
+const app = express()
+const mongoose = require("mongoose")
+const url = "mongodb://127.0.0.1:27017/CRUD"
+mongoose.connect(url,{useNewUrlParser:true})
+const con = mongoose.connection
+
+con.on("open",function(){
+    console.log("Connected.......")
+})
+
+app.use(express.json())
+
+const alienRouter = require('./routers/alien')
+app.use('/alien',alienRouter)
+
+app.listen(9000,()=>console.log("Server started at port 9000"))
+
+create a new folder as models and create new file in the models folders name – alien.js
+models/alien.js
+const mongoose = require("mongoose")
+
+const alienSchema = new mongoose.Schema({
+    name:{
+        type:String,
+        required:true
+    },
+    tech:{
+        type:String,
+        required:true
+    },
+    sub:{
+        type:Boolean,
+        required:true,
+        default:false
+    }
+})
+
+module.exports = mongoose.model("Alien",alienSchema)
+
+
+same create a router folder in project and create a new file in in as alien.js
+routers/alien.js 
+const express = require("express")
+const router = express.Router()
+const Alien = require("../models/alien")
+
+router.get("/",async(req,res)=>{
+    try{
+        const aliens = await Alien.find()
+        res.json(aliens)
+    }catch(err){
+        res.send("Error:"+err)
+    }
+})
+
+router.get("/:id",async(req,res)=>{
+    try{
+        const aliens = await Alien.findById(req.params.id)
+        res.json(aliens)
+    }catch(err){
+        res.send("Error"+err)
+    }
+})
+
+router.post("/",async(req,res)=>{
+    const alien = new Alien({
+        name:req.body.name,
+        tech:req.body.tech,
+        sub:req.body.sub
+    })
+    try {
+        const a1 = await alien.save()
+        res.json(a1)
+    } catch (error) {
+        res.send("Error"+error)
+    }
+})
+
+router.patch("/:id",async(req,res)=>{
+    try {
+        const alien = await Alien.findById(req.params.id)
+        alien.sub = req.body.sub    //the updation here is only for the sub ,for all refer below comments code
+        const a1 = await alien.save()
+        res.json(a1)
+    } catch (err) {
+        res.send(err)
+    }
+})
+
+module.exports = router

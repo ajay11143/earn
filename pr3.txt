@@ -1,0 +1,366 @@
+Step-by-Step guide to creating a to do list
+1. Create a React application
+yarn: yarn create react-app todo-list
+npm: npx create-react-app todo-list
+cd into todo-list and run yarn start (if using Yarn) OR npm start (if using npm). Your project should now be served on localhost:3000.
+
+2. App.js
+Navigate to App.js and get rid of everything between the two <div> tags. We won’t need any of the pre-populated code. Our App.js is pretty bare bones at this point:
+
+import React from 'react';
+import './App.css';
+ 
+function App() {
+ return (
+   <div className="App">
+    	Hello World! A To Do List Will Go here!
+   </div>
+ );
+}
+ 
+export default App;
+If you want to add a string or something to make sure your React instance is working on localhost, feel free to do so.
+
+3. Header
+Create a new file in the src directory and name it Header.js. Then, Create a presentational component that will display a header identifying the name of your application. Export your Header and import it to App.js. In the empty <div>, add <Header />.
+
+Here is our code so far:
+
+import React from 'react';
+ 
+const Header = () => {
+   return (
+       <header>
+           <h1>To Do List</h1>
+       </header>
+   );
+};
+ 
+export default Header; 
+
+Our output at this stage
+
+Our output at this stage
+4. Create mock data to test the application
+Copy and paste this JSON object into a new file in the src directory named data.json. We are going to work with this data in our project to test to see if things are working properly.
+
+In App.js, add import data from “./data.json”; to your list of imports at the top of the page.
+
+[{
+   "id": 1,
+   "task": "Give dog a bath",
+   "complete": true
+ }, {
+   "id": 2,
+   "task": "Do laundry",
+   "complete": true
+ }, {
+   "id": 3,
+   "task": "Vacuum floor",
+   "complete": false
+ }, {
+   "id": 4,
+   "task": "Feed cat",
+   "complete": true
+ }, {
+   "id": 5,
+   "task": "Change light bulbs",
+   "complete": false
+ }, {
+   "id": 6,
+   "task": "Go to Store",
+   "complete": true
+ }, {
+   "id": 7,
+   "task": "Fill gas tank",
+   "complete": true
+ }, {
+   "id": 8,
+   "task": "Change linens",
+   "complete": false
+ }, {
+   "id": 9,
+   "task": "Rake leaves",
+   "complete": true
+ }, {
+   "id": 10,
+   "task": "Bake Cookies",
+   "complete": false
+ }, {
+   "id": 11,
+   "task": "Take nap",
+   "complete": true
+ }, {
+   "id": 12,
+   "task": "Read book",
+   "complete": true
+ }, {
+   "id": 13,
+   "task": "Exercise",
+   "complete": false
+ }, {
+   "id": 14,
+   "task": "Give dog a bath",
+   "complete": false
+ }, {
+   "id": 15,
+   "task": "Do laundry",
+   "complete": false
+ }, {
+   "id": 16,
+   "task": "Vacuum floor",
+   "complete": false
+ }, {
+   "id": 17,
+   "task": "Feed cat",
+   "complete": true
+ }, {
+   "id": 18,
+   "task": "Change light bulbs",
+   "complete": false
+ }, {
+   "id": 19,
+   "task": "Go to Store",
+   "complete": false
+ }, {
+   "id": 20,
+   "task": "Fill gas tank",
+   "complete": false
+ }]5. Read list of to-dos and display
+The next thing we need to do is test our ability to read a set of test data. Let’s use our useState() hook to wire up some local state in App.js.
+
+Basic syntax for useState()
+
+const [ variable, setVariable ] = useState(<initState?>); 
+Note: Remember to import React, { useState } from ‘react’; at the top of the page.
+
+import React, { useState } from 'react';
+import data from "./data.json";
+//components
+import Header from "./Header";
+ 
+import './App.css';
+ 
+function App() {
+  const [ toDoList, setToDoList ] = useState(data);
+ 
+ 
+ return (
+   <div className="App">
+     <Header />
+   </div>
+ );
+}
+ 
+export default App;
+
+in App.js
+Now we need to map over the toDoList and create individual todo components. Create two new files in the src directory called ToDoList.js and ToDo.js.
+
+The ToDoList.js file is the container that holds all of our todos, and ToDo.js is one single row in our To Do List.
+
+Don’t forget to export the ToDoList and import it to App.js. Also, export the ToDo and import it into ToDoList.js. We will need it when we return our individual components in our map function.
+
+import React, { useState } from 'react';
+import data from "./data.json";
+//components
+import Header from "./Header";
+import ToDoList from "./ToDoList";
+ 
+import './App.css';
+ 
+function App() {
+  const [ toDoList, setToDoList ] = useState(data);
+ 
+ 
+ return (
+   <div className="App">
+     <Header />
+     <ToDoList toDoList={toDoList}/>
+   </div>
+ );
+}
+ 
+export default App;
+
+
+In App.js
+Because our state logic is held in App.js (it will become clearer soon why that is), we need to pass our entire toDoList down to our <ToDoList /> component.
+
+In our ToDoList, we will map over the todoList object that was passed down as props to create individual todos. Don’t forget to pass down the individual todo down as props to the ToDo component.
+
+import React from 'react';
+import ToDo from './ToDo';
+ 
+ 
+const ToDoList = ({toDoList}) => {
+   return (
+       <div>
+           {toDoList.map(todo => {
+               return (
+                   <ToDo todo={todo} />
+               )
+           })}
+       </div>
+   );
+};
+ 
+export default ToDoList;
+
+In ToDoList.js
+All we want from the ToDo component is the actual task that is on our list. We will also need to make use of the complete property on the todo object to indicate whether or not something is decorated with a strikethrough.
+
+import React from 'react';
+ 
+const ToDo = ({todo}) => {
+   return (
+       <div>
+           {todo.task}
+       </div>
+   );
+};
+ 
+export default ToDo; 
+
+Toggle task completion
+Let’s tackle toggling on and off whether or not a task is completed.
+
+Let’s first add a className to our individual To-Do component that will help us with styling. We are going to use a little bit of JavaScript to help us here. Here we add the attribute className and set it equal to a JavaScript expression that asks the question of whether or not the to-do is complete.
+
+Note: Anything in between curly braces when using JSX signals that we are using JavaScript functions.
+
+ const ToDo = ({todo}) => {
+   return (
+       <div className={todo.complete ? "strike" : ""}>
+           {todo.task}
+       </div>
+   );
+};
+
+If our task is completed, we will use the className strike to enforce styling. Otherwise, there won’t be a className. In our index.css, add the following:
+
+.strike {
+   text-decoration: line-through;
+}
+
+
+Now if you were to take a look at your React application, you should see some of the tasks with a line through it indicating that a project or task has been done.
+
+Next, we have to create a function that will toggle the complete from true to false. This requires going back to App.js since our state resides there.
+
+Creating a toggle function (toggle()) is fairly simple. What we want to do is that when a user clicks on a task, we want to change the state of complete to true if it’s false or vice versa. We will use the second variable in our deconstructed useState array to do this.
+
+
+ const handleToggle = (id) => {
+   let mapped = toDoList.map(task => {
+     return task.id == id ? { ...task, complete: !task.complete } : { ...task};
+   });
+   setToDoList(mapped);
+ }
+
+
+Delete completed tasks
+What are we going to do with all of those crossed-off, completed tasks? Let’s delete them! Create a button that will have an onClick handler that filters out all of the completed items.
+
+This is super similar to the handleToggle function we just did. All we need to do is take the toDoList and filter through it, return all items that are not completed, and then set the filtered array onto toDoList.
+
+Because the filter method returns a new array, we are not in danger of mutating state and can proceed without making a copy of the array before we play with it.
+
+const handleFilter = () => {
+   let filtered = toDoList.filter(task => {
+     return !task.complete;
+   });
+   setToDoList(filtered);
+ }
+
+
+Then, add a button to the end of the ToDoList component and set an onClick to fire the handleFilter function. You want to be certain to add your handleFilter function to App.js and then pass down the function as props to the ToDoList.
+
+
+
+import React from 'react';
+import ToDo from './ToDo';
+ 
+const ToDoList = ({toDoList, handleToggle, handleFilter}) => {
+   return (
+       <div>
+           {toDoList.map(todo => {
+               return (
+                   <ToDo todo={todo} handleToggle={handleToggle} handleFilter={handleFilter}/>
+               )
+           })}
+           <button style={{margin: '20px'}} onClick={handleFilter}>Clear Completed</button>
+       </div>
+   );
+};
+ 
+export default ToDoList;
+
+
+Add tasks with a form component
+The final item on our list is to create a form component that will handle adding tasks to our ToDoList. Create a new file in your src directory and call it ToDoForm.js.
+
+Create a basic form that will allow a user to input a task name, hit enter or click on a button, and have a function fire to add the task. For a form to work correctly we have to keep track of the changes as we go, so logically we have to handle what happens as the input changes.
+
+Form Logic
+
+There are four main things that we need to have to make our forms work:
+
+Local state (so we will need to employ the useState() hook)
+Our form component with an input value that is assigned to the correct variable
+A function that handles the state’s changes
+A function to handle the form submission
+
+useState to handle user input
+
+Add an import for the useState hook to your React import. Our state here will keep track of any input that the user types into their form. The initial state is set to an empty string since there should be nothing in the form yet.
+
+const [ userInput, setUserInput ] = useState('');
+
+Form Component
+
+Now, create a form component that encapsulates an input and a button. Fairly basic. You can play with style later.
+
+
+Input.value
+
+Your <input> element should have a value associated with it that matches the name of your state variable (I named mine userInput). The change handler will take the value here and set the state every time it changes.
+
+<input value={userInput} type="text" onChange={handleChange} placeholder="Enter task..."/>
+
+handleChange
+
+This is the function that will handle the local state’s changes. Every time a user types in the input box, the state will change to reflect the most recent input.
+
+const handleChange = (e) => {
+       setUserInput(e.currentTarget.value)
+   }
+
+handleSubmit
+
+When a user hits ‘Enter’ or clicks the ‘Submit’ button, this function will fire to add the task to the toDoList array.
+
+const handleSubmit = (e) => {
+       e.preventDefault();
+       addTask(userInput);
+       setUserInput(“”);
+ 
+   }
+When we use forms, remember to use e.preventDefault() because we don’t want the default action to take place. In this case, it would reload the page and everything changed will go back to how it initially rendered.
+
+Be sure to set userInput back to an empty string after the addTask function has run. This will set the form back to an empty input.
+
+
+addTask Next is the addTask function. This function goes in App.js since that is where all of our toDoList state is. We need to be able to set the new array on state using setToDoList and we can only do that when the addTask function has access to that state.
+
+ const addTask = (userInput) => {
+   let copy = [...toDoList];
+   copy = [...copy, { id: toDoList.length + 1, task: userInput, complete: false }];
+   setToDoList(copy);
+ }
+This function takes in userInput that we gathered from our form component’s current state. Make a copy of the toDoList so we don’t directly manipulate the state.
+
+Next, reassign copy to a new array, with copy spread in, and the new list item tagged on the end. Another way this could be written is:
+
+copy.push({id: toDoList.length + 1, task: userInput, complete: false });
+Make sure you pass addTask as props down to the ToDoForm.

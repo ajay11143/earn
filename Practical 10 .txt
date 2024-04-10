@@ -1,0 +1,185 @@
+Practical 10 
+Open VS code ,then open terminal 
+Step 1:execute following command to install angular
+npm install –g @angular/cli
+Step 2:perform following command in powershell,(In window search  Window powershell)
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+Step 3: create the project
+ng new my-app             (my-app is your application name)
+<enter> (for css)
+yes (type this for further process)
+Step 4: run the project (Go to the prompt of your project i.e. my-app, using cd command)
+ng serve --open
+Step 5: delete the following file from app folder
+app.component.spec.ts
+Step 6: run below command that create components folders and some files start with name todo)
+ng g c components/todo
+Step 7: create new models  folder in app folder(right click on app folder New folder as models) and create a new file in models folders (right click on models folder new file name it as – Todo.ts )
+Step 8: write the below code in given files-
+Todo.ts
+export class Todo{
+    content!:string;
+    completed!:boolean;
+}
+
+todo.component.html 
+<div class="todos">
+    <form (submit)="addTodo()">
+        <input action="text" name="inputToDo" placeholder="Enter your Task" class="todo-input" [(ngModel)]="inputTodo" />
+        <input style="cursor: pointer;" type="submit" value="Add Your ToDo" class="todo-submit" />
+    </form>
+</div>
+
+<div class="todos" *ngFor="let todo of todos; let i = index;" class="todo{{(todo.completed? 'done':'')}}">
+    <div class="id">{{i}}</div>
+    <div class="content" (click)="toggleDone(i)">{{todo.content}}</div>
+    <button class="delete" (click)="deleteTodo(i)">Remove</button>
+</div>
+
+app.component.ts
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { TodoComponent } from './components/todo/todo.component';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterOutlet,TodoComponent],
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.css'
+})
+export class AppComponent {
+  title = 'todo';	//todo is my application name
+}
+
+
+todo.component.ts
+import { Component, OnInit } from '@angular/core';
+import {Todo} from '../../models/Todo';
+import { CommonModule } from '@angular/common';
+import { NgFor } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'app-todo',
+  standalone: true,
+  imports: [CommonModule,NgFor,FormsModule],
+  templateUrl: './todo.component.html',
+  styleUrl: './todo.component.css'
+})
+export class TodoComponent implements OnInit{
+  //title
+  todos!:Todo[];
+  inputTodo:string="";
+  constructor(){
+
+  }
+  ngOnInit(): void {
+    this.todos=[{
+      content:'first content',
+      completed:false
+
+    },{
+      content:'second content',
+      completed:false
+    },]
+  }
+
+  toggleDone(id:number){
+    this.todos.map((v,i)=>{
+      if(i==id)v.completed=!v.completed;
+      return v;
+    })
+  }
+  deleteTodo(id:number){
+    this.todos=this.todos.filter((v,i)=>i!==id);
+  }
+
+  addTodo(){
+    if(this.inputTodo.trim()!==''){
+      this.todos.push({
+      content:this.inputTodo,
+      completed:false
+    });
+    this.inputTodo='';
+    }}
+}
+
+
+todo.component.css
+.todo {
+    display: flex;
+    padding: 10px 15px;
+    background-color: #FFF;
+    border-bottom: 1px solid #DDD;
+}
+
+.todo:nth-child(even) {
+    background-color: #EEE;
+}
+
+.todo:last-of-type {
+    border-bottom: 0;
+}
+
+.todo .id {
+    flex: 1 1 50px;
+}
+
+.todo .content {
+    flex: 1 1 100%;
+}
+
+.todo.done .content {
+    text-decoration: line-through;
+}
+
+.todo-input {
+    display: block;
+    width: 100%;
+    padding: 10px 15px;
+    appearance: none;
+    border: none;
+    background-color: #F3F3F3;
+    margin-top: 15px;
+    font-size: 20px;
+    outline: none;
+}
+
+.todo-submit {
+    display: block;
+    width: 100%;
+    max-width: 200px;
+    appearance: none;
+    border: none;
+    outline: none;
+    background: none;
+
+    background-color: #4beb0c;
+    color: #FFF;
+    margin: 15px auto;
+
+    padding: 10px 15px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+app.component.html (delete all the unnecessary code and type the below one)
+<div class="app">
+  <header>
+    <h1>Angular ToDo App</h1>
+  </header>
+  <app-todo></app-todo>
+</div>
+
+styles.css
+/* You can add global styles to this file, and also import other style files */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:sans-serif;
+}
+
+Now, go to terminal and at your project prompt, type the below code and run the project 
+Ng serve --open
